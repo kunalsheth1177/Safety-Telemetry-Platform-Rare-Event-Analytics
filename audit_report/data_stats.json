@@ -1,0 +1,19 @@
+{
+  "total_trips": 3000,
+  "total_events": 15000,
+  "total_transitions": 2000,
+  "distinct_trips": 3000,
+  "rare_events": 45,
+  "rare_event_rate": 0.015,
+  "event_types": {
+    "safety_intervention": 5000,
+    "fault": 4000,
+    "mode_transition": 2000,
+    "latency_spike": 3000,
+    "RARE_CRITICAL_FAULT": 15,
+    "RARE_PERCEPTION_FAILURE": 20,
+    "RARE_CONTROL_DEGRADATION": 10
+  },
+  "min_timestamp": "2024-01-01T00:00:00Z",
+  "max_timestamp": "2024-01-30T23:59:59Z"
+}

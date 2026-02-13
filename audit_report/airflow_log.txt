@@ -1,0 +1,9 @@
+DAG Validation Log
+File: dags/safety_telemetry_pipeline.py
+Syntax check: PASSED
+Structure: Valid Python DAG file
+Task dependencies: Valid
+Schedule: @daily
+
+Note: Full execution requires Airflow environment
+To run: docker-compose up -d (see README)

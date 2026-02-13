@@ -1,0 +1,10 @@
+{
+  "staging_events": 15000,
+  "analytics_events": 15000,
+  "rare_events": 45,
+  "rare_distribution": {
+    "RARE_CRITICAL_FAULT": 15,
+    "RARE_PERCEPTION_FAILURE": 20,
+    "RARE_CONTROL_DEGRADATION": 10
+  }
+}

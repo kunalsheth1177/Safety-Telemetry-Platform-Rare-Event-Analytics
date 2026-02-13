@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# Jupyter
+.ipynb_checkpoints
+*.ipynb_checkpoints
+
+# Data
+data/raw/*
+data/staging/*
+data/synthetic/*
+!data/.gitkeep
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Airflow
+logs/
+plugins/
+airflow.db
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# GCP
+*.json
+!requirements.txt
+!audit_report/*.json
+!schemas/*.json
+!docs/*.json
+
+# Model outputs
+*.csv
+!tests/*.csv

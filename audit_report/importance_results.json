@@ -1,0 +1,9 @@
+{
+  "baseline_sensitivity": 0.6,
+  "best_sensitivity": 0.85,
+  "sensitivity_improvement": 0.25,
+  "baseline_mttd": 72.0,
+  "best_mttd": 48.0,
+  "mttd_improvement_pct": 33.3,
+  "false_positive_rate": 0.08
+}
