@@ -7,7 +7,7 @@ End-to-end pipeline for ingesting event telemetry, modeling rare safety regressi
 - **SQL/BigQuery**: Data warehousing and transformations
 - **PyMC**: Bayesian modeling (survival analysis, change-point detection)
 - **Airflow**: Workflow orchestration
-- **Power BI**: Dashboards and visualizations
+- **Tableau**: Dashboards and visualizations
 - **Docker Compose**: Local development environment
 
 ## Project Structure
@@ -94,6 +94,12 @@ python -m models.changepoint_model
 ```bash
 # Access Airflow UI at http://localhost:8080
 # Trigger DAG: safety_telemetry_pipeline
+```
+
+7. **Generate Tableau Extracts**
+```bash
+python scripts/export_tableau_extracts.py
+# Extracts saved to tableau/extracts/
 ```
 
 ## Key Metrics
