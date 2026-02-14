@@ -7,7 +7,12 @@ __pycache__/
 env/
 venv/
 ENV/
-.venv
+.venv/
+
+# Tableau
+*.twb
+*.twbx
+.~*
 
 # Jupyter
 .ipynb_checkpoints
