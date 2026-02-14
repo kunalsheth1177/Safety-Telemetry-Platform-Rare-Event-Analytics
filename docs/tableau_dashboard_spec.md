@@ -4,15 +4,15 @@
 Interactive Tableau dashboard for weekly safety investigations, providing real-time visibility into fleet safety metrics, rare event detection, change-point analysis, and MTTD improvements.
 
 ## Data Sources
-- **CSV Extracts**: Located in `tableau/extracts/`
-  - `fleet_safety_overview.csv` - Daily fleet metrics
-  - `rare_event_monitoring.csv` - Rare event details
-  - `changepoint_detection.csv` - Change-point detection results
-  - `mttd_comparison.csv` - MTTD comparison by method
-  - `vehicle_details.csv` - Vehicle metadata
+- **Excel Extracts**: Located in `tableau/extracts/`
+  - `fleet_safety_overview.xlsx` - Daily fleet metrics
+  - `rare_event_monitoring.xlsx` - Rare event details
+  - `changepoint_detection.xlsx` - Change-point detection results
+  - `mttd_comparison.xlsx` - MTTD comparison by method
+  - `vehicle_details.xlsx` - Vehicle metadata
 
 - **Refresh Schedule**: Daily (after Airflow pipeline completion)
-- **Connection Type**: Text file (CSV) extracts
+- **Connection Type**: Excel file (.xlsx) extracts
 
 ---
 

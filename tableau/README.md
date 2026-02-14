@@ -12,19 +12,20 @@ Tableau-compatible dashboard for weekly safety investigations with 4 interactive
 python scripts/export_tableau_extracts.py
 ```
 
-This generates 5 CSV files in `tableau/extracts/`:
-- `fleet_safety_overview.csv` - Daily fleet metrics (90 days)
-- `rare_event_monitoring.csv` - Rare event details
-- `changepoint_detection.csv` - Change-point detection results
-- `mttd_comparison.csv` - MTTD comparison by method
-- `vehicle_details.csv` - Vehicle metadata
+This generates 5 Excel files in `tableau/extracts/`:
+- `fleet_safety_overview.xlsx` - Daily fleet metrics (90 days)
+- `rare_event_monitoring.xlsx` - Rare event details
+- `changepoint_detection.xlsx` - Change-point detection results
+- `mttd_comparison.xlsx` - MTTD comparison by method
+- `vehicle_details.xlsx` - Vehicle metadata
 
 ### 2. Connect to Tableau
 
 1. Open Tableau Desktop
-2. Connect to Text File
-3. Select CSV files from `tableau/extracts/`
-4. Create relationships between data sources:
+2. Connect to Microsoft Excel
+3. Select Excel files from `tableau/extracts/`
+4. Select the appropriate worksheet from each Excel file
+5. Create relationships between data sources:
    - `fleet_safety_overview` ↔ `vehicle_details` (by Vehicle ID)
    - `rare_event_monitoring` ↔ `vehicle_details` (by Vehicle ID)
    - `changepoint_detection` ↔ `fleet_safety_overview` (by Date)
@@ -73,7 +74,7 @@ See `docs/weekly_analyst_workflow.md` for:
 
 ## Files
 
-- `tableau/extracts/` - CSV data extracts
+- `tableau/extracts/` - Excel (.xlsx) data extracts
 - `tableau/tableau_dashboard_spec.json` - Complete dashboard specification (JSON)
 - `docs/tableau_dashboard_spec.md` - Human-readable specification
 - `docs/weekly_analyst_workflow.md` - Analyst workflow guide

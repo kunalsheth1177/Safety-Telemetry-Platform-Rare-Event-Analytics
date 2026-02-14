@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """
-Export Analytics Tables to CSV for Tableau
+Export Analytics Tables to Excel (.xlsx) for Tableau
 
-Generates CSV extracts from analytics tables for Tableau dashboard ingestion.
-Uses only standard library - no external dependencies required.
+Generates Excel extracts from analytics tables for Tableau dashboard ingestion.
+Uses openpyxl for Excel generation.
 """
 
 import sys
-import csv
 from pathlib import Path
 from datetime import datetime, timedelta
 import json
@@ -20,8 +19,64 @@ sys.path.insert(0, str(PROJECT_ROOT))
 OUTPUT_DIR = PROJECT_ROOT / "tableau" / "extracts"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
+# Try to import openpyxl, fall back to CSV if not available
+try:
+    from openpyxl import Workbook
+    from openpyxl.styles import Font, PatternFill
+    HAS_OPENPYXL = True
+except ImportError:
+    HAS_OPENPYXL = False
+    print("Warning: openpyxl not installed. Install with: pip install openpyxl")
+    print("Falling back to CSV format...")
+
 # Set seed for reproducibility
 random.seed(42)
+
+def write_to_excel(data, output_file, sheet_name="Data"):
+    """Write data to Excel file."""
+    if not HAS_OPENPYXL:
+        # Fallback to CSV
+        import csv
+        csv_file = output_file.with_suffix('.csv')
+        with open(csv_file, 'w', newline='') as f:
+            if data:
+                writer = csv.DictWriter(f, fieldnames=data[0].keys())
+                writer.writeheader()
+                writer.writerows(data)
+        return csv_file
+    
+    wb = Workbook()
+    ws = wb.active
+    ws.title = sheet_name
+    
+    if not data:
+        wb.save(output_file)
+        return output_file
+    
+    # Write headers
+    headers = list(data[0].keys())
+    for col_idx, header in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_idx, value=header)
+        cell.font = Font(bold=True)
+        cell.fill = PatternFill(start_color="366092", end_color="366092", fill_type="solid")
+        cell.font = Font(bold=True, color="FFFFFF")
+    
+    # Write data
+    for row_idx, row_data in enumerate(data, 2):
+        for col_idx, header in enumerate(headers, 1):
+            value = row_data.get(header, '')
+            ws.cell(row=row_idx, column=col_idx, value=value)
+    
+    # Auto-adjust column widths
+    for col_idx, header in enumerate(headers, 1):
+        max_length = max(
+            len(str(header)),
+            max((len(str(row.get(header, ''))) for row in data), default=0)
+        )
+        ws.column_dimensions[ws.cell(row=1, column=col_idx).column_letter].width = min(max_length + 2, 50)
+    
+    wb.save(output_file)
+    return output_file
 
 def generate_fleet_safety_overview():
     """Generate daily fleet safety summary for Page 1."""
@@ -65,15 +120,10 @@ def generate_fleet_safety_overview():
             'max_latency_ms': round(random.uniform(150, 300), 2)
         })
     
-    output_file = OUTPUT_DIR / "fleet_safety_overview.csv"
-    with open(output_file, 'w', newline='') as f:
-        if data:
-            writer = csv.DictWriter(f, fieldnames=data[0].keys())
-            writer.writeheader()
-            writer.writerows(data)
-    
-    print(f"  ✅ Saved {len(data)} rows to {output_file}")
-    return output_file
+    output_file = OUTPUT_DIR / "fleet_safety_overview.xlsx"
+    result_file = write_to_excel(data, output_file, "Fleet Safety Overview")
+    print(f"  ✅ Saved {len(data)} rows to {result_file}")
+    return result_file
 
 def generate_rare_event_monitoring():
     """Generate rare event details for Page 2."""
@@ -122,15 +172,10 @@ def generate_rare_event_monitoring():
             })
             event_id += 1
     
-    output_file = OUTPUT_DIR / "rare_event_monitoring.csv"
-    with open(output_file, 'w', newline='') as f:
-        if data:
-            writer = csv.DictWriter(f, fieldnames=data[0].keys())
-            writer.writeheader()
-            writer.writerows(data)
-    
-    print(f"  ✅ Saved {len(data)} rows to {output_file}")
-    return output_file
+    output_file = OUTPUT_DIR / "rare_event_monitoring.xlsx"
+    result_file = write_to_excel(data, output_file, "Rare Event Monitoring")
+    print(f"  ✅ Saved {len(data)} rows to {result_file}")
+    return result_file
 
 def generate_changepoint_detection():
     """Generate change-point detection results for Page 3."""
@@ -157,6 +202,8 @@ def generate_changepoint_detection():
         # Change-point detected flag (after day 35)
         changepoint_detected = day_number <= 55  # 90 - 35 = 55
         
+        mttd_value = None if not changepoint_detected else (changepoint_day - day_number) * 24
+        
         data.append({
             'date': date.date().isoformat(),
             'day_number': day_number,
@@ -167,18 +214,13 @@ def generate_changepoint_detection():
             'changepoint_detected': changepoint_detected,
             'changepoint_probability': round(0.0 if not changepoint_detected else random.uniform(0.6, 0.95), 3),
             'hazard_ratio': round(1.0 if day_number > changepoint_day else random.uniform(1.8, 2.5), 2),
-            'mttd_hours': None if not changepoint_detected else (changepoint_day - day_number) * 24
+            'mttd_hours': mttd_value
         })
     
-    output_file = OUTPUT_DIR / "changepoint_detection.csv"
-    with open(output_file, 'w', newline='') as f:
-        if data:
-            writer = csv.DictWriter(f, fieldnames=data[0].keys())
-            writer.writeheader()
-            writer.writerows(data)
-    
-    print(f"  ✅ Saved {len(data)} rows to {output_file}")
-    return output_file
+    output_file = OUTPUT_DIR / "changepoint_detection.xlsx"
+    result_file = write_to_excel(data, output_file, "Change-Point Detection")
+    print(f"  ✅ Saved {len(data)} rows to {result_file}")
+    return result_file
 
 def generate_mttd_comparison():
     """Generate MTTD comparison data for Page 4."""
@@ -212,15 +254,10 @@ def generate_mttd_comparison():
                 'experiment_date': (datetime.now() - timedelta(days=random.randint(0, 30))).date().isoformat()
             })
     
-    output_file = OUTPUT_DIR / "mttd_comparison.csv"
-    with open(output_file, 'w', newline='') as f:
-        if data:
-            writer = csv.DictWriter(f, fieldnames=data[0].keys())
-            writer.writeheader()
-            writer.writerows(data)
-    
-    print(f"  ✅ Saved {len(data)} rows to {output_file}")
-    return output_file
+    output_file = OUTPUT_DIR / "mttd_comparison.xlsx"
+    result_file = write_to_excel(data, output_file, "MTTD Comparison")
+    print(f"  ✅ Saved {len(data)} rows to {result_file}")
+    return result_file
 
 def generate_vehicle_details():
     """Generate vehicle-level details for filtering."""
@@ -242,22 +279,22 @@ def generate_vehicle_details():
             'rare_event_count': random.randint(0, 5)
         })
     
-    output_file = OUTPUT_DIR / "vehicle_details.csv"
-    with open(output_file, 'w', newline='') as f:
-        if data:
-            writer = csv.DictWriter(f, fieldnames=data[0].keys())
-            writer.writeheader()
-            writer.writerows(data)
-    
-    print(f"  ✅ Saved {len(data)} rows to {output_file}")
-    return output_file
+    output_file = OUTPUT_DIR / "vehicle_details.xlsx"
+    result_file = write_to_excel(data, output_file, "Vehicle Details")
+    print(f"  ✅ Saved {len(data)} rows to {result_file}")
+    return result_file
 
 def main():
     """Generate all Tableau extracts."""
     print("=" * 80)
-    print("TABLEAU CSV EXTRACT GENERATOR")
+    print("TABLEAU EXCEL EXTRACT GENERATOR")
     print("=" * 80)
     print()
+    
+    if not HAS_OPENPYXL:
+        print("⚠️  openpyxl not installed. Generating CSV files instead.")
+        print("   To generate Excel files, install: pip install openpyxl")
+        print()
     
     extracts = {
         'fleet_safety_overview': generate_fleet_safety_overview(),
@@ -270,6 +307,7 @@ def main():
     # Create manifest
     manifest = {
         'generated_at': datetime.utcnow().isoformat(),
+        'format': 'xlsx' if HAS_OPENPYXL else 'csv',
         'extracts': {k: str(v) for k, v in extracts.items()}
     }
     
@@ -281,6 +319,7 @@ def main():
     print("=" * 80)
     print("✅ All extracts generated successfully!")
     print(f"   Output directory: {OUTPUT_DIR}")
+    print(f"   Format: {'Excel (.xlsx)' if HAS_OPENPYXL else 'CSV (.csv)'}")
     print("=" * 80)
 
 if __name__ == '__main__':
